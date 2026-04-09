@@ -1,0 +1,23 @@
+{
+    "configurations": [
+        
+        {
+            "type": "java",
+            "name": "Spring Boot-UserServiceApplication<user-service>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}/user_service",
+            "mainClass": "com.example.userservice.UserServiceApplication",
+            "projectName": "user-service",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-CampaignServiceApplication<campaign-service>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}/campaign_service",
+            "mainClass": "com.example.campaignservice.CampaignServiceApplication",
+            "projectName": "campaign-service",
+            "args": ""
+        }
+    ]
+}

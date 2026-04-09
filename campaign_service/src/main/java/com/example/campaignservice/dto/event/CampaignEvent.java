@@ -1,0 +1,12 @@
+package com.example.campaignservice.dto.event;
+
+import java.time.Instant;
+import java.util.UUID;
+
+public record CampaignEvent(
+        UUID eventId,
+        String eventType,
+        Instant timestamp,
+        CampaignEventData data
+) {
+}
