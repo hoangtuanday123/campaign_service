@@ -1,5 +1,5 @@
 server:
-  port: 8081
+  port: 8083
 
 spring:
   application:
@@ -26,7 +26,7 @@ spring:
       port: 6379
       timeout: 2s
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers:  localhost:19092,localhost:29092
     producer:
       acks: all
       retries: 5
