@@ -24,7 +24,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/api/campaigns")
+@RequestMapping("/api/v1/campaigns")
 @Tag(name = "Campaigns", description = "Campaign lifecycle management endpoints")
 public class CampaignController {
 
