@@ -20,6 +20,7 @@ import com.example.campaignservice.dto.campaign.UpdateCampaignRequest;
 import com.example.campaignservice.service.CampaignService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
@@ -42,8 +43,17 @@ public class CampaignController {
                 .body(ApiResponse.success(HttpStatus.CREATED.value(), "Campaign created successfully", response));
     }
 
+    @GetMapping
+    @Operation(summary = "List all campaigns")
+    public ResponseEntity<ApiResponse<List<CampaignResponse>>> getAll() {
+        List<CampaignResponse> response = campaignService.getAll();
+        return ResponseEntity.ok(ApiResponse.success(HttpStatus.OK.value(), "Campaigns retrieved successfully", response));
+    }
+
     @GetMapping("/{id}")
-    @Operation(summary = "Get a campaign by id")
+    @Operation(summary = "Get a campaign by id", description = "Retrieve a campaign by its unique identifier. Supports both JWT Bearer token and API Key authentication.")
+    @SecurityRequirement(name = "bearerAuth")
+    @SecurityRequirement(name = "apiKeyAuth")
     public ResponseEntity<ApiResponse<CampaignResponse>> getById(@PathVariable UUID id) {
         CampaignResponse response = campaignService.getById(id);
         return ResponseEntity.ok(ApiResponse.success(HttpStatus.OK.value(), "Campaign retrieved successfully", response));

@@ -4,7 +4,6 @@ import com.example.promotionengine.dto.user.UserSnapshot;
 import com.example.promotionengine.exception.DownstreamServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientResponseException;
@@ -36,8 +35,8 @@ public class RestUserServiceClient implements UserServiceClient {
             RestClient.RequestHeadersSpec<?> request = restClient.get()
                     .uri(properties.getBaseUrl() + properties.getUserByIdPath(), userId);
 
-            if (properties.getAuthToken() != null && !properties.getAuthToken().isBlank()) {
-                request = request.header(HttpHeaders.AUTHORIZATION, "Bearer " + properties.getAuthToken());
+            if (properties.getApiKey() != null && !properties.getApiKey().isBlank()) {
+                request = request.header("X-API-Key", properties.getApiKey());
             }
 
             UserEnvelope response = request.retrieve().body(UserEnvelope.class);

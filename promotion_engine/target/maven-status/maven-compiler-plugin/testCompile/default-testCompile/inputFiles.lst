@@ -1,2 +1,3 @@
-D:\project\campaign_system\promotion_engine\src\test\java\com\example\promotionengine\integration\kafka\CampaignEventConsumerTest.java
-D:\project\campaign_system\promotion_engine\src\test\java\com\example\promotionengine\service\impl\PromotionServiceImplTest.java
+C:\Users\tuan.phan\project\campaign_service\promotion_engine\src\test\java\com\example\promotionengine\integration\kafka\CampaignEventConsumerTest.java
+C:\Users\tuan.phan\project\campaign_service\promotion_engine\src\test\java\com\example\promotionengine\producer\PromotionEventProducerTest.java
+C:\Users\tuan.phan\project\campaign_service\promotion_engine\src\test\java\com\example\promotionengine\service\impl\PromotionServiceImplTest.java

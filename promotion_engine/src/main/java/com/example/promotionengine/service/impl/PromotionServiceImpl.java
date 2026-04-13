@@ -4,9 +4,13 @@ import com.example.promotionengine.client.campaign.CampaignServiceClient;
 import com.example.promotionengine.client.user.UserServiceClient;
 import com.example.promotionengine.dto.campaign.CampaignDetails;
 import com.example.promotionengine.dto.campaign.CampaignStatus;
+import com.example.promotionengine.dto.event.PromotionEvent;
+import com.example.promotionengine.dto.event.PromotionEventType;
 import com.example.promotionengine.dto.promotion.ApplyPromotionRequest;
 import com.example.promotionengine.dto.promotion.PromotionEligibilityResponse;
+import com.example.promotionengine.dto.promotion.PromotionInteractionRequest;
 import com.example.promotionengine.dto.user.UserSnapshot;
+import com.example.promotionengine.producer.PromotionEventProducer;
 import com.example.promotionengine.service.CampaignCacheService;
 import com.example.promotionengine.service.PromotionService;
 import com.example.promotionengine.service.PromotionUsageClaimResult;
@@ -24,6 +28,7 @@ public class PromotionServiceImpl implements PromotionService {
     private final CampaignServiceClient campaignServiceClient;
     private final CampaignCacheService campaignCacheService;
     private final PromotionUsageService promotionUsageService;
+    private final PromotionEventProducer promotionEventProducer;
     private final Clock clock;
 
     public PromotionServiceImpl(
@@ -31,12 +36,14 @@ public class PromotionServiceImpl implements PromotionService {
             CampaignServiceClient campaignServiceClient,
             CampaignCacheService campaignCacheService,
             PromotionUsageService promotionUsageService,
+            PromotionEventProducer promotionEventProducer,
             Clock clock
     ) {
         this.userServiceClient = userServiceClient;
         this.campaignServiceClient = campaignServiceClient;
         this.campaignCacheService = campaignCacheService;
         this.promotionUsageService = promotionUsageService;
+        this.promotionEventProducer = promotionEventProducer;
         this.clock = clock;
     }
 
@@ -71,11 +78,24 @@ public class PromotionServiceImpl implements PromotionService {
 
         PromotionUsageClaimResult claimResult = claimUsage(campaign, request);
         return switch (claimResult) {
-            case CLAIMED -> PromotionEligibilityResponse.eligible("Promotion applied successfully");
+            case CLAIMED -> {
+                publishEvent(PromotionEventType.PROMOTION_APPLIED, request.userId(), campaign.id());
+                yield PromotionEligibilityResponse.eligible("Promotion applied successfully");
+            }
             case ALREADY_USED -> PromotionEligibilityResponse.ineligible("User already used promotion");
             case QUOTA_EXHAUSTED -> PromotionEligibilityResponse.ineligible("Campaign quota is exhausted");
             case CACHE_UNAVAILABLE -> PromotionEligibilityResponse.ineligible("Promotion temporarily unavailable");
         };
+    }
+
+    @Override
+    public void trackCampaignView(PromotionInteractionRequest request) {
+        publishEvent(PromotionEventType.CAMPAIGN_VIEWED, request.userId(), request.campaignId());
+    }
+
+    @Override
+    public void trackCampaignClick(PromotionInteractionRequest request) {
+        publishEvent(PromotionEventType.CAMPAIGN_CLICKED, request.userId(), request.campaignId());
     }
 
     private CampaignDetails loadCampaign(ApplyPromotionRequest request) {
@@ -110,5 +130,14 @@ public class PromotionServiceImpl implements PromotionService {
                 request.userId(),
                 refreshedCampaign.get().endTime()
         );
+    }
+
+    private void publishEvent(PromotionEventType eventType, java.util.UUID userId, java.util.UUID campaignId) {
+        promotionEventProducer.sendEvent(new PromotionEvent(
+                eventType.value(),
+                userId,
+                campaignId,
+                Instant.now(clock)
+        ));
     }
 }

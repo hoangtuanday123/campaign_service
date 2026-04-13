@@ -16,14 +16,24 @@ public class OpenApiConfig {
     @Bean
     public OpenAPI campaignOpenApi() {
         return new OpenAPI()
-            .components(new Components().addSecuritySchemes(
-                "bearerAuth",
-                new SecurityScheme()
-                    .type(SecurityScheme.Type.HTTP)
-                    .scheme("bearer")
-                    .bearerFormat("JWT")
-            ))
+            .components(new Components()
+                .addSecuritySchemes(
+                    "bearerAuth",
+                    new SecurityScheme()
+                        .type(SecurityScheme.Type.HTTP)
+                        .scheme("bearer")
+                        .bearerFormat("JWT")
+                )
+                .addSecuritySchemes(
+                    "apiKeyAuth",
+                    new SecurityScheme()
+                        .type(SecurityScheme.Type.APIKEY)
+                        .in(SecurityScheme.In.HEADER)
+                        .name("X-API-Key")
+                )
+            )
             .addSecurityItem(new SecurityRequirement().addList("bearerAuth"))
+            .addSecurityItem(new SecurityRequirement().addList("apiKeyAuth"))
                 .info(new Info()
                         .title("Campaign Service API")
                         .description("Campaign lifecycle management for the promotion platform")

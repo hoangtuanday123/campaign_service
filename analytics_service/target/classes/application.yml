@@ -1,0 +1,51 @@
+server:
+  port: 8085
+
+spring:
+  application:
+    name: analytics-service
+  data:
+    mongodb:
+      uri: mongodb://root:12345678@localhost:27017/analyticsservice?authSource=admin&retryWrites=true&w=majority
+      auto-index-creation: true
+    redis:
+      host: localhost
+      port: 6379
+      timeout: 2s
+  kafka:
+    bootstrap-servers: localhost:19092,localhost:29092
+    consumer:
+      auto-offset-reset: latest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.use.type.headers: false
+        spring.json.value.default.type: com.example.analyticsservice.dto.event.CampaignEvent
+        spring.json.trusted.packages: com.example.analyticsservice.dto.event
+
+security:
+  jwt:
+    secret: c3VwZXItc2VjdXJlLXN1cGVyLXNlY3VyZS1zdXBlci1zZWNyZS1rZXktZm9yLXVzZXItc2VydmljZQ==
+    expiration-millis: 3600000
+  api-key:
+    header-name: X-API-Key
+    value: 0rgquHV5uT4Fxgui
+
+campaign:
+  events:
+    topic: campaign-events
+    consumer-group: analytics-service
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+
+logging:
+  level:
+    com.example.analyticsservice: INFO
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html

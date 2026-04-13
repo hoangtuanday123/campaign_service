@@ -1,6 +1,5 @@
 {
     "configurations": [
-        
         {
             "type": "java",
             "name": "Spring Boot-UserServiceApplication<user-service>",
@@ -8,7 +7,8 @@
             "cwd": "${workspaceFolder}/user_service",
             "mainClass": "com.example.userservice.UserServiceApplication",
             "projectName": "user-service",
-            "args": ""
+            "args": "",
+            "vmArgs": " -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=59649 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dspring.jmx.enabled=true -Djava.rmi.server.hostname=localhost -Dspring.application.admin.enabled=true -Dspring.boot.project.name=user-service"
         },
         {
             "type": "java",
@@ -17,7 +17,18 @@
             "cwd": "${workspaceFolder}/campaign_service",
             "mainClass": "com.example.campaignservice.CampaignServiceApplication",
             "projectName": "campaign-service",
-            "args": ""
+            "args": "",
+            "vmArgs": " -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=63742 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dspring.jmx.enabled=true -Djava.rmi.server.hostname=localhost -Dspring.application.admin.enabled=true -Dspring.boot.project.name=campaign-service"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-PromotionEngineApplication<promotion-engine>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.example.promotionengine.PromotionEngineApplication",
+            "projectName": "promotion-engine",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
         }
     ]
 }

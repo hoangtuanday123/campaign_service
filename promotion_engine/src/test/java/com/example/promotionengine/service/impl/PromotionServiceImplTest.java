@@ -4,15 +4,19 @@ import com.example.promotionengine.client.campaign.CampaignServiceClient;
 import com.example.promotionengine.client.user.UserServiceClient;
 import com.example.promotionengine.dto.campaign.CampaignDetails;
 import com.example.promotionengine.dto.campaign.CampaignStatus;
+import com.example.promotionengine.dto.event.PromotionEvent;
 import com.example.promotionengine.dto.promotion.ApplyPromotionRequest;
 import com.example.promotionengine.dto.promotion.PromotionEligibilityResponse;
+import com.example.promotionengine.dto.promotion.PromotionInteractionRequest;
 import com.example.promotionengine.dto.user.UserSnapshot;
+import com.example.promotionengine.producer.PromotionEventProducer;
 import com.example.promotionengine.service.CampaignCacheService;
 import com.example.promotionengine.service.PromotionUsageClaimResult;
 import com.example.promotionengine.service.PromotionUsageService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -42,6 +46,9 @@ class PromotionServiceImplTest {
     @Mock
     private PromotionUsageService promotionUsageService;
 
+    @Mock
+    private PromotionEventProducer promotionEventProducer;
+
     private PromotionServiceImpl promotionService;
     private Clock clock;
 
@@ -53,6 +60,7 @@ class PromotionServiceImplTest {
                 campaignServiceClient,
                 campaignCacheService,
                 promotionUsageService,
+                promotionEventProducer,
                 clock
         );
     }
@@ -73,6 +81,12 @@ class PromotionServiceImplTest {
 
         assertEquals(true, response.eligible());
         assertEquals("Promotion applied successfully", response.message());
+        ArgumentCaptor<PromotionEvent> eventCaptor = ArgumentCaptor.forClass(PromotionEvent.class);
+        verify(promotionEventProducer).sendEvent(eventCaptor.capture());
+        assertEquals("promotion_applied", eventCaptor.getValue().eventType());
+        assertEquals(userId, eventCaptor.getValue().userId());
+        assertEquals(campaignId, eventCaptor.getValue().campaignId());
+        assertEquals(Instant.parse("2026-04-12T00:00:00Z"), eventCaptor.getValue().timestamp());
         verify(campaignServiceClient, never()).getCampaign(campaignId);
     }
 
@@ -121,6 +135,35 @@ class PromotionServiceImplTest {
 
         assertEquals(false, response.eligible());
         assertEquals("User already used promotion", response.message());
+        verify(promotionEventProducer, never()).sendEvent(org.mockito.ArgumentMatchers.any());
+    }
+
+    @Test
+    void shouldPublishCampaignViewedEvent() {
+        UUID userId = UUID.randomUUID();
+        UUID campaignId = UUID.randomUUID();
+
+        promotionService.trackCampaignView(new PromotionInteractionRequest(userId, campaignId));
+
+        ArgumentCaptor<PromotionEvent> eventCaptor = ArgumentCaptor.forClass(PromotionEvent.class);
+        verify(promotionEventProducer).sendEvent(eventCaptor.capture());
+        assertEquals("campaign_viewed", eventCaptor.getValue().eventType());
+        assertEquals(userId, eventCaptor.getValue().userId());
+        assertEquals(campaignId, eventCaptor.getValue().campaignId());
+    }
+
+    @Test
+    void shouldPublishCampaignClickedEvent() {
+        UUID userId = UUID.randomUUID();
+        UUID campaignId = UUID.randomUUID();
+
+        promotionService.trackCampaignClick(new PromotionInteractionRequest(userId, campaignId));
+
+        ArgumentCaptor<PromotionEvent> eventCaptor = ArgumentCaptor.forClass(PromotionEvent.class);
+        verify(promotionEventProducer).sendEvent(eventCaptor.capture());
+        assertEquals("campaign_clicked", eventCaptor.getValue().eventType());
+        assertEquals(userId, eventCaptor.getValue().userId());
+        assertEquals(campaignId, eventCaptor.getValue().campaignId());
     }
 
     private CampaignDetails activeCampaign(UUID campaignId) {

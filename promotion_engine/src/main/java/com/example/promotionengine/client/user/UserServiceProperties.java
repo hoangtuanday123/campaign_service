@@ -7,7 +7,7 @@ public class UserServiceProperties {
 
     private String baseUrl;
     private String userByIdPath = "/api/v1/users/{id}";
-    private String authToken;
+    private String apiKey;
 
     public String getBaseUrl() {
         return baseUrl;
@@ -25,11 +25,11 @@ public class UserServiceProperties {
         this.userByIdPath = userByIdPath;
     }
 
-    public String getAuthToken() {
-        return authToken;
+    public String getApiKey() {
+        return apiKey;
     }
 
-    public void setAuthToken(String authToken) {
-        this.authToken = authToken;
+    public void setApiKey(String apiKey) {
+        this.apiKey = apiKey;
     }
 }

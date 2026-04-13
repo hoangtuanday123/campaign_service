@@ -24,6 +24,9 @@ security:
   jwt:
     secret: c3VwZXItc2VjdXJlLXN1cGVyLXNlY3VyZS1zdXBlci1zZWNyZS1rZXktZm9yLXVzZXItc2VydmljZQ==
     expiration-millis: 3600000
+  apikey:
+    header: X-API-Key
+    value: IIcw2CWYElfAbxcD
 
 management:
   endpoints:

@@ -1,10 +1,7 @@
 package com.example.userservice.controller;
 
-import com.example.userservice.common.api.ApiResponse;
-import com.example.userservice.dto.user.UpdateUserRequest;
-import com.example.userservice.dto.user.UserResponse;
-import com.example.userservice.service.UserService;
-import jakarta.validation.Valid;
+import java.util.UUID;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,7 +12,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.UUID;
+import com.example.userservice.common.api.ApiResponse;
+import com.example.userservice.dto.user.UpdateUserRequest;
+import com.example.userservice.dto.user.UserResponse;
+import com.example.userservice.service.UserService;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -27,6 +29,17 @@ public class UserController {
         this.userService = userService;
     }
 
+    /**
+     * Get user by ID.
+     * Supports both Bearer token and API Key authentication.
+     * 
+     * Authentication Methods:
+     * - Bearer Token: Authorization: Bearer {token}
+     * - API Key: X-API-Key: {api-key}
+     *
+     * @param id the user ID
+     * @return the user response
+     */
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<UserResponse>> getById(@PathVariable UUID id) {
         UserResponse response = userService.getById(id);

@@ -7,6 +7,7 @@ public class CampaignServiceProperties {
 
     private String baseUrl;
     private String campaignByIdPath = "/api/v1/campaigns/{id}";
+    private String apiKey;
 
     public String getBaseUrl() {
         return baseUrl;
@@ -22,5 +23,13 @@ public class CampaignServiceProperties {
 
     public void setCampaignByIdPath(String campaignByIdPath) {
         this.campaignByIdPath = campaignByIdPath;
+    }
+
+    public String getApiKey() {
+        return apiKey;
+    }
+
+    public void setApiKey(String apiKey) {
+        this.apiKey = apiKey;
     }
 }

@@ -1,5 +1,16 @@
 package com.example.campaignservice.service.impl;
 
+import java.time.Clock;
+import java.time.Instant;
+import java.util.Comparator;
+import java.util.List;
+import java.util.UUID;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
+
 import com.example.campaignservice.domain.entity.Campaign;
 import com.example.campaignservice.domain.enums.CampaignStatus;
 import com.example.campaignservice.dto.campaign.CampaignResponse;
@@ -12,16 +23,6 @@ import com.example.campaignservice.repository.CampaignRepository;
 import com.example.campaignservice.service.CampaignCacheService;
 import com.example.campaignservice.service.CampaignEventPublisher;
 import com.example.campaignservice.service.CampaignService;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionSynchronization;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
-
-import java.time.Clock;
-import java.time.Instant;
-import java.util.Comparator;
-import java.util.List;
-import java.util.UUID;
 
 @Service
 public class CampaignServiceImpl implements CampaignService {
@@ -162,6 +163,14 @@ public class CampaignServiceImpl implements CampaignService {
 
         activeCampaigns.forEach(campaignCacheService::cacheActiveCampaign);
         return activeCampaigns;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<CampaignResponse> getAll() {
+        return campaignRepository.findAll().stream()
+                .map(CampaignResponse::from)
+                .toList();
     }
 
     private Campaign getCampaign(UUID id) {

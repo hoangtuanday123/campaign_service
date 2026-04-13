@@ -1,0 +1,4 @@
+com\example\analyticsservice\consumer\CampaignEventConsumerTest.class
+com\example\analyticsservice\controller\AnalyticsControllerTest.class
+com\example\analyticsservice\consumer\CampaignEventConsumerTest$1.class
+com\example\analyticsservice\service\impl\AnalyticsServiceImplTest.class

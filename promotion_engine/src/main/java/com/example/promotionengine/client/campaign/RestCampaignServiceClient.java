@@ -32,10 +32,14 @@ public class RestCampaignServiceClient implements CampaignServiceClient {
         }
 
         try {
-            CampaignEnvelope response = restClient.get()
-                    .uri(properties.getBaseUrl() + properties.getCampaignByIdPath(), campaignId)
-                    .retrieve()
-                    .body(CampaignEnvelope.class);
+            RestClient.RequestHeadersSpec<?> request = restClient.get()
+                    .uri(properties.getBaseUrl() + properties.getCampaignByIdPath(), campaignId);
+
+            if (properties.getApiKey() != null && !properties.getApiKey().isBlank()) {
+                request = request.header("X-API-Key", properties.getApiKey());
+            }
+
+            CampaignEnvelope response = request.retrieve().body(CampaignEnvelope.class);
 
             if (response == null || response.data() == null) {
                 return Optional.empty();
@@ -48,10 +52,10 @@ public class RestCampaignServiceClient implements CampaignServiceClient {
             }
 
             log.warn("Campaign Service lookup failed for campaign {} with status {}", campaignId, ex.getStatusCode().value());
-            throw new DownstreamServiceException("Campaign Service is unavailable", ex);
+            throw new DownstreamServiceException("Campaign Service is unavailable or unauthorized", ex);
         } catch (Exception ex) {
             log.warn("Campaign Service lookup failed for campaign {}", campaignId, ex);
-            throw new DownstreamServiceException("Campaign Service is unavailable", ex);
+            throw new DownstreamServiceException("Campaign Service is unavailable or unauthorized", ex);
         }
     }
 

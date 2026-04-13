@@ -6,6 +6,17 @@ spring:
     name: promotion-engine
   kafka:
     bootstrap-servers: localhost:19092,localhost:29092
+    producer:
+      acks: all
+      retries: 3
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        delivery.timeout.ms: 10000
+        enable.idempotence: true
+        linger.ms: 5
+        retry.backoff.ms: 500
+        spring.json.add.type.headers: false
     consumer:
       auto-offset-reset: latest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
@@ -18,21 +29,26 @@ spring:
     redis:
       host: localhost
       port: 6379
-      timeout: 50ms
+      timeout: 2s
 
 campaign:
   events:
     topic: campaign-events
     consumer-group: promotion-engine
 
+promotion:
+  events:
+    topic: promotion-events
+
 services:
   user:
     base-url: http://localhost:8081
     user-by-id-path: /api/v1/users/{id}
-    auth-token:
+    api-key: IIcw2CWYElfAbxcD
   campaign:
     base-url: http://localhost:8083
     campaign-by-id-path: /api/v1/campaigns/{id}
+    api-key: 0rgquHV5uT4Fxgui
 
 management:
   endpoints:
