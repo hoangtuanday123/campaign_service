@@ -1,0 +1,56 @@
+server:
+  port: 8080
+  forward-headers-strategy: framework
+
+spring:
+  application:
+    name: api-gateway
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      timeout: 2s
+  cloud:
+    gateway:
+      httpclient:
+        connect-timeout: 3000
+        response-timeout: 5s
+
+security:
+  jwt:
+    secret: ${JWT_SECRET:c3VwZXItc2VjdXJlLXN1cGVyLXNlY3VyZS1zdXBlci1zZWNyZS1rZXktZm9yLXVzZXItc2VydmljZQ==}
+    expiration-millis: ${JWT_EXPIRATION_MILLIS:3600000}
+
+services:
+  user:
+    base-url: ${USER_SERVICE_BASE_URL:http://localhost:8081}
+  campaign:
+    base-url: ${CAMPAIGN_SERVICE_BASE_URL:http://localhost:8083}
+  promotion:
+    base-url: ${PROMOTION_ENGINE_BASE_URL:http://localhost:8084}
+  analytics:
+    base-url: ${ANALYTICS_SERVICE_BASE_URL:http://localhost:8085}
+
+gateway:
+  rate-limit:
+    max-requests: ${GATEWAY_RATE_LIMIT_MAX_REQUESTS:100}
+    window-seconds: ${GATEWAY_RATE_LIMIT_WINDOW_SECONDS:60}
+    key-prefix: ${GATEWAY_RATE_LIMIT_KEY_PREFIX:api-gateway:rate-limit}
+  auth:
+    forwarded-user-id-header: X-Authenticated-User-Id
+    forwarded-username-header: X-Authenticated-Username
+  public-paths:
+    - /actuator/health
+    - /swagger-ui.html
+    - /swagger-ui/**
+    - /v3/api-docs/**
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+logging:
+  level:
+    com.example.apigateway: INFO

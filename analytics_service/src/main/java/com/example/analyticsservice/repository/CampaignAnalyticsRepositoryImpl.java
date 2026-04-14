@@ -1,7 +1,10 @@
 package com.example.analyticsservice.repository;
 
-import com.example.analyticsservice.domain.document.CampaignAnalytics;
-import com.example.analyticsservice.domain.enums.AnalyticsStatus;
+import java.time.Instant;
+import java.util.LinkedHashSet;
+import java.util.Optional;
+import java.util.UUID;
+
 import org.springframework.data.mongodb.core.FindAndModifyOptions;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -9,10 +12,8 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Repository;
 
-import java.time.Instant;
-import java.util.LinkedHashSet;
-import java.util.Optional;
-import java.util.UUID;
+import com.example.analyticsservice.domain.document.CampaignAnalytics;
+import com.example.analyticsservice.domain.enums.AnalyticsStatus;
 
 @Repository
 public class CampaignAnalyticsRepositoryImpl implements CampaignAnalyticsRepositoryCustom {
